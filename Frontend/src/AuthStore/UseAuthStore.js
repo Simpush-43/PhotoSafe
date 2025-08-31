@@ -18,18 +18,21 @@ const UseAuthStore = create((set) => ({
       set({ user: User, token: tokens.accessToken, loading: false });
       sessionStorage.setItem("accessToken", tokens.accessToken);
       sessionStorage.setItem("refreshToken", tokens.refreshToken);
-      return {success:true};
+      return { success: true };
     } catch (error) {
       set({
         error: error?.response?.data?.message || "SignUp failed",
         loading: false,
       });
       console.error("Signup Error:", error);
-      return {success: false, message: error?.response?.data?.message || "Signup failed"}
+      return {
+        success: false,
+        message: error?.response?.data?.message || "Signup failed",
+      };
     }
   },
 
-  //signin 
+  //signin
   signin: async ({ Email, Password }) => {
     set({ loading: true, error: null });
     try {
@@ -38,106 +41,127 @@ const UseAuthStore = create((set) => ({
       set({ user: User, token: tokens.accessToken, loading: false });
       sessionStorage.setItem("accessToken", tokens.accessToken);
       sessionStorage.setItem("refreshToken", tokens.refreshToken);
-      return {success: true};
+      return { success: true };
     } catch (error) {
       set({
         error: error?.response?.data?.message || "SignIn failed",
         loading: false,
       });
       console.error("Signin Error:", error);
-      return {success:false,message: error?.response?.data?.message || "SignIn failed"}
+      return {
+        success: false,
+        message: error?.response?.data?.message || "SignIn failed",
+      };
     }
   },
 
   //signout
-  signout: ()=>{
-    set({user:null,token:null});
+  signout: () => {
+    set({ user: null, token: null });
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("refreshToken");
   },
   // handle googlecallback
-handleGoogleCallback: async (serverResponse)=>{
-  set({loading:true,error:null});
-  try {
-    const {user,tokens} = serverResponse;
-    set({
-      user,
-      token:tokens.accessToken,
-      loading:false,
-    });
-    sessionStorage.setItem("accessToken",tokens.accessToken);
-    sessionStorage.setItem("refreshToken",tokens.refreshToken);
-    return {success: true};
-  } catch (error) {
-    set({
+  handleGoogleCallback: async (serverResponse) => {
+    set({ loading: true, error: null });
+    try {
+      const { user, tokens } = serverResponse;
+      set({
+        user,
+        token: tokens.accessToken,
+        loading: false,
+      });
+      sessionStorage.setItem("accessToken", tokens.accessToken);
+      sessionStorage.setItem("refreshToken", tokens.refreshToken);
+      return { success: true };
+    } catch (error) {
+      set({
         error: error?.response?.data?.message || "Google sign-in failed",
         loading: false,
       });
       console.error("Google Login Error:", error);
-      return { 
-        success: false, 
-        message: error?.response?.data?.message || "Google sign-in failed"
+      return {
+        success: false,
+        message: error?.response?.data?.message || "Google sign-in failed",
       };
-  }
-},
-// user 
-fetchUser:async(userDetail)=>{
-set({loading:true,error:null})
-try {
-  const token = sessionStorage.getItem("accessToken");
-  if(!token) {
-    set({user:null,loading:false})
-    return
-  }
-  const res = await axios.get(`${BASE_URL}/me`,{
-    headers:{Authorization: `Bearer ${token}`}
-  })
-  set ({user:res.data,loading:false})
-} catch (error) {
-        console.error("Fetch user error:", error);
-      set({ user: null, error: "Failed to fetch user", loading: false });
-}
-},
-// get all users
-fetchallUsers: async()=>{
-  set({loading:true,error:null})
-  try {
-    const token = sessionStorage.getItem("accessToken");
-    if(!token){
-    set({users:[],loading:false})
-    return
     }
-const res = await axios.get(`${BASE_URL}/users`,{
-  headers:{Authorization:`Bearer ${token}`}
-})
-set({users:res.data,loading:false})
-  } catch (error) {
-    console.error("Fetch all users error:", error);
-    set({ users: [], error: "Failed to fetch users", loading: false });
-  }
-},
-// upload image
-UploadImage: async (file)=>{
-const token = sessionStorage.getItem("accessToken");
-if(!token){
-    console.info("You are not authorized user please login")
-}else{
-  const formdata = new FormData();
-  console.log(formdata)
-  formdata.append('image',file);
-  for (let pair of formdata.entries()) {
-  console.log(pair[0] + ": ", pair[1]);
-}
-  const res = await axios.post(`${BASE_URL}/upload`,formdata,{
-    headers:{Authorization:`Bearer ${token}`,
-  }
-  }
-);
-console.log(res.data);
-  return res.data
-
-}
-}
+  },
+  // user
+  fetchUser: async (userDetail) => {
+    set({ loading: true, error: null });
+    try {
+      const token = sessionStorage.getItem("accessToken");
+      if (!token) {
+        set({ user: null, loading: false });
+        return;
+      }
+      const res = await axios.get(`${BASE_URL}/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      set({ user: res.data, loading: false });
+    } catch (error) {
+      console.error("Fetch user error:", error);
+      set({ user: null, error: "Failed to fetch user", loading: false });
+    }
+  },
+  // get all users
+  fetchallUsers: async () => {
+    set({ loading: true, error: null });
+    try {
+      const token = sessionStorage.getItem("accessToken");
+      if (!token) {
+        set({ users: [], loading: false });
+        return;
+      }
+      const res = await axios.get(`${BASE_URL}/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      set({ users: res.data, loading: false });
+    } catch (error) {
+      console.error("Fetch all users error:", error);
+      set({ users: [], error: "Failed to fetch users", loading: false });
+    }
+  },
+  // upload image
+  UploadImage: async (file) => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      console.info("You are not authorized user please login");
+    } else {
+      const formdata = new FormData();
+      formdata.append("image", file);
+      for (let pair of formdata.entries()) {
+        console.log(pair[0] + ": ", pair[1]);
+      }
+      const res = await axios.post(`${BASE_URL}/upload`, formdata, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return res.data;
+    }
+  },
+  // get all images
+  GetALLImage: async () => {
+    set({ loading: true, error: null });
+    try {
+      const token = sessionStorage.getItem("accessToken");
+      if (!token) {
+        set({ images: [], loading: false });
+        res.json({ message: "You are not authorized please login" });
+        return;
+      } else {
+        const res = await axios.get(`${BASE_URL}/images`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        set({ images: res?.data.images, loading: true });
+      }
+    } catch (error) {
+      console.error("Fetch all images error:", error);
+      set({ images: [], error: "Failed to fetch images", loading: false });
+    }
+  },
 }));
 
 export default UseAuthStore;

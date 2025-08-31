@@ -5,32 +5,48 @@ import { AnimatePresence, motion, scale } from "framer-motion";
 import ProfileImage from "../assets/reshot-icon-profile-image-SBDVTH9PEA (1).png";
 const SendPage = () => {
   const [selecteduser, setselecteduser] = useState(null);
-  const { user,fetchUser,users, fetchallUsers,UploadImage } = UseAuthStore();
+  const [no_of_images, seno_of_images] = useState(0);
+  const {
+    user,
+    fetchUser,
+    users,
+    fetchallUsers,
+    UploadImage,
+    GetALLImage,
+    images,
+  } = UseAuthStore();
+  // get all users
   useEffect(() => {
-   fetchallUsers();
-fetchUser();
+    fetchallUsers();
+    fetchUser();
   }, []);
+  // get all images
+  useEffect(() => {
+    GetALLImage();
+  }, []);
+  console.log("All images", images);
   const currentUser = user;
-// function to send images
-const Imagesend =async(e)=>{
-  const file = e.target.files[0];
-  console.log(file)
-  if(!file){
-    console.error('file is not present')
-  }
-    try {
-    const res = await UploadImage(file);
-    console.log("Full Response:", res);
-
-    if (res?.imageUrl) {
-      console.log("Uploaded:", res.imageUrl);
-    } else {
-      console.error("imageUrl not found in response");
+  // function to send images
+  const Imagesend = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      console.error("file is not present");
     }
-  } catch (err) {
-    console.error("Upload error:", err);
-  }
-}
+    try {
+      const res = await UploadImage(file);
+      if (res?.imageUrl) {
+        updateImageCount();
+        console.log("Uploaded:", res.imageUrl);
+      } else {
+        console.error("imageUrl not found in response");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+    }
+  };
+  const updateImageCount = () => {
+    seno_of_images((prev) => prev + 1);
+  };
   return (
     <div className="flex h-screen">
       {/* left siderbar */}
@@ -43,20 +59,27 @@ const Imagesend =async(e)=>{
           className="w-full border-b-2 border-b-white text-amber-100"
         />
         <div className="space-y-2">
-{users && currentUser?(users.filter((user)=> user._id !== currentUser._id).map(u => (
-    <motion.div
-      key={u.id}
-      whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.94 }}
-      className="flex items-center gap-2 p-2 hover:bg-gray-200 cursor-pointer rounded-l-lg mt-[10px]"
-      onClick={() => setselecteduser(u)}
-    >
-      <img src={u.Profilepic || ProfileImage} alt="" className="w-10 h-10 rounded-full" />
-      <span className="font-medium text-lg font-sans text-amber-200">
-        {u.Firstname}
-      </span>
-    </motion.div>
-  ))
+          {users && currentUser ? (
+            users
+              .filter((user) => user._id !== currentUser._id)
+              .map((u) => (
+                <motion.div
+                  key={u.id}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.94 }}
+                  className="flex items-center gap-2 p-2 hover:bg-gray-200 cursor-pointer rounded-l-lg mt-[10px]"
+                  onClick={() => setselecteduser(u)}
+                >
+                  <img
+                    src={u.Profilepic || ProfileImage}
+                    alt=""
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <span className="font-medium text-lg font-sans text-amber-200">
+                    {u.Firstname}
+                  </span>
+                </motion.div>
+              ))
           ) : (
             <div className="loader">
               {" "}
@@ -96,11 +119,35 @@ const Imagesend =async(e)=>{
               </div>
               {/* Message area */}
               <div className="flex overflow-y-auto p-4 bg-gray-100">
-                <p className="text-gray-500">No messages yet...</p>
+                {no_of_images > 0 ? (
+                  <p>No of images sent: {no_of_images}</p>
+                ) : (
+                  <p className="text-gray-500">No messages yet...</p>
+                )}
+                <div>
+                  <p>Your sent image:</p>
+                  {images && images.length > 0 ? (
+                    images.map((i) => (
+                      <img
+                        key={i._id}
+                        src={i.imageUrl}
+                        alt="sent"
+                        className="w-20 h-20 m-1 rounded"
+                      />
+                    ))
+                  ) : (
+                    <p>No images sent yet</p>
+                  )}
+                </div>
               </div>
               {/* Input */}
               <div className="p-2 border-t flex gap-2 bg-white">
-                <input type="file" className="hidden" id="imageUpload" onChange={Imagesend}/>
+                <input
+                  type="file"
+                  className="hidden"
+                  id="imageUpload"
+                  onChange={Imagesend}
+                />
                 <label
                   htmlFor="imageUpload"
                   className="cursor-pointer bg-blue-500 text-white px-3 py-2 rounded-lg"

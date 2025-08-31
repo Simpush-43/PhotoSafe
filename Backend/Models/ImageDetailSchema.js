@@ -1,17 +1,26 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-// creating a image schema 
 const ImagedetailSchema = new mongoose.Schema({
-  imageUrl:{
-    type:String,
+  user: {                // 🟢 add this
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
-  CreatedAt :{
-    type:String,
-    default:Date.now()
+  imageUrl: {
+    type: String,
+    required: true
   },
-  Expirytime :{Type:Number}
-})
-// Creating index for image auto delete
-ImagedetailSchema.index({
-  CreatedAt:1
-},{expireAfterSeconds:0})
+  CreatedAt: {
+    type: Date,
+    default: Date.now
+  },
+  expireAt: {
+    type: Date,
+    required: true
+  }
+});
+
+// TTL index
+ImagedetailSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
+
+module.exports = mongoose.model("Image", ImagedetailSchema);
