@@ -1,41 +1,47 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
-const UserdetailSchema = new mongoose.Schema({
-  Firstname : {
-    type:String,
-    required:true,
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const UserdetailSchema = new mongoose.Schema(
+  {
+    Firstname: {
+      type: String,
+      required: true,
+    },
+    Lastname: {
+      type: String,
+    },
+    Email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    Password: {
+      type: String,
+      required: true,
+    },
+    Age: {
+      type: Number,
+      required: true,
+      min: 13,
+    },
+    Profilepic: {
+      type: String,
+    },
   },
-  Lastname:{
-    type:String,
-  },
-  Email:{
-    type:String,
-    required:true,
-    unique:true,
-    lowercase:true,
-    trim:true,
-  },
-  Password:{
-    type:String,
-    required:true,
-  },
-  Age:{
-    type:Number,
-    required:true,
-    min:13,
-  },
-  Profilepic:{
-    type:String,
-  }
-},{timestamps:true})
+  { timestamps: true }
+);
 // creating index for fast search
-UserdetailSchema.index({
-  Email:1
-},{unique:true});
+UserdetailSchema.index(
+  {
+    Email: 1,
+  },
+  { unique: true }
+);
 
 // middleware to hash password before saving
-UserdetailSchema.pre('save', async function (next) {
-  if (!this.isModified('Password')) {
+UserdetailSchema.pre("save", async function (next) {
+  if (!this.isModified("Password")) {
     return next();
   }
 
@@ -48,15 +54,15 @@ UserdetailSchema.pre('save', async function (next) {
   }
 });
 
-// virtual keyword to not save full name in db saving memory 
-UserdetailSchema.virtual('fullname').get(()=>{
-  return `${this.Firstname} ${this.Lastname}`
-})
+// virtual keyword to not save full name in db saving memory
+UserdetailSchema.virtual("fullname").get(() => {
+  return `${this.Firstname} ${this.Lastname}`;
+});
 
 // enable virtuals in json output
 
-UserdetailSchema.set('toJSON',{
-  virtuals:true
-})
+UserdetailSchema.set("toJSON", {
+  virtuals: true,
+});
 
-module.exports = mongoose.model('User',UserdetailSchema);
+module.exports = mongoose.model("User", UserdetailSchema);

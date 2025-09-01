@@ -3,11 +3,11 @@ const GoogleStrategy = require("passport-google-oauth20");
 const User = require("../Models/UserDetailSchema");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const dotenv = require('dotenv');
-const path = require('path');
-const axios = require('axios')
+const dotenv = require("dotenv");
+const path = require("path");
+const axios = require("axios");
 
-const envPath = path.resolve(__dirname, '../.env');
+const envPath = path.resolve(__dirname, "../.env");
 dotenv.config({ path: envPath });
 
 // token generation
@@ -27,7 +27,7 @@ function generateToken(user) {
 exports.Signup = async (req, res) => {
   try {
     const { Firstname, Lastname, Email, Password, Age } = req.body;
-    console.log("Request body:",req.body)
+    console.log("Request body:", req.body);
     // check if user exists
     const Existinguser = await User.findOne({ Email });
     if (Existinguser) {
@@ -37,7 +37,13 @@ exports.Signup = async (req, res) => {
     }
 
     // creating user
-    const Newuser = new User({ Firstname, Lastname, Email, Password, Age: Number(Age) });
+    const Newuser = new User({
+      Firstname,
+      Lastname,
+      Email,
+      Password,
+      Age: Number(Age),
+    });
     await Newuser.save();
     // using the generatetoken function
     const { accessToken, refreshToken } = generateToken(Newuser);
@@ -47,9 +53,9 @@ exports.Signup = async (req, res) => {
       tokens: { accessToken, refreshToken },
     });
   } catch (error) {
-        console.error("Signup controller error:", error);
-         console.error("Error message:", error.message);
-             // Log the error stack trace
+    console.error("Signup controller error:", error);
+    console.error("Error message:", error.message);
+    // Log the error stack trace
     console.error("Error stack:", error.stack);
     res
       .status(500)
@@ -85,61 +91,63 @@ exports.Signin = async (req, res) => {
       .json({ message: "Error in logging in", error: error.message });
   }
 };
-exports.fetchAlluser = async(req,res)=>{
-try {
-  const users = await User.find({},'-Password')
-  res.status(200).json(users)
-} catch (error) {
-  res.status(500).json({ message: "Failed to fetch users", error: error.message });
-  console.log(error.message)
-}
-}
-
-exports.handleGoogleCallback = async (req,res)=>{
+exports.fetchAlluser = async (req, res) => {
   try {
-    const {access_token} = req.body || {};
+    const users = await User.find({}, "-Password");
+    res.status(200).json(users);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch users", error: error.message });
+    console.log(error.message);
+  }
+};
+
+exports.handleGoogleCallback = async (req, res) => {
+  try {
+    const { access_token } = req.body || {};
     if (!access_token) {
       console.error("No access token received in request body.");
       return res.status(400).json({ message: "Access token is missing." });
     }
-    const googleUserInfo = await axios.get(`${process.env.userInfoGoogle}`,{
-      headers:{Authorization:`Bearer ${access_token.trim()}`}
+    const googleUserInfo = await axios.get(`${process.env.userInfoGoogle}`, {
+      headers: { Authorization: `Bearer ${access_token.trim()}` },
     });
-    const {email,given_name,family_name,picture}= googleUserInfo.data;
+    const { email, given_name, family_name, picture } = googleUserInfo.data;
 
     // find or create user
-    let user = await User.findOne({Email:email}) 
-    if(!user){
-    user = await User.create({
-      Email:email,
-      Firstname:given_name,
-      Lastname:family_name || '',
-      Password: '-google-auth-' + Math.random().toString(36).slice(-8),
-      Age:13,
-      Profilepic:picture,
-    })
+    let user = await User.findOne({ Email: email });
+    if (!user) {
+      user = await User.create({
+        Email: email,
+        Firstname: given_name,
+        Lastname: family_name || "",
+        Password: "-google-auth-" + Math.random().toString(36).slice(-8),
+        Age: 13,
+        Profilepic: picture,
+      });
     }
-    if(!user.Profilepic){
+    if (!user.Profilepic) {
       user.Profilepic = picture;
       await user.save();
     }
-const {accessToken,refreshToken} = generateToken(user);
-res.status(200).json({
+    const { accessToken, refreshToken } = generateToken(user);
+    res.status(200).json({
       message: "Successfully authenticated with Google",
       user: {
         id: user._id,
         email: user.Email,
         firstname: user.Firstname,
         lastname: user.Lastname,
-        Profilepic:user.Profilepic
+        Profilepic: user.Profilepic,
       },
-      tokens: { accessToken, refreshToken }
+      tokens: { accessToken, refreshToken },
     });
   } catch (error) {
-     console.error("Google authentication error:", error);
+    console.error("Google authentication error:", error);
     res.status(500).json({
       message: "Failed to authenticate with Google",
-      error: error.message
+      error: error.message,
     });
   }
-}
+};

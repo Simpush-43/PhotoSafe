@@ -1,27 +1,28 @@
 const mongoose = require("mongoose");
 
 const ImagedetailSchema = new mongoose.Schema({
-  SenderID: {                // 🟢 add this
+  SenderID: {
+    // 🟢 add this
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: "User",
+    required: true,
   },
-  ReceiverID:{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:'User',
-    required:true
+  ReceiverID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
   imageUrl: {
     type: String,
-    required: true
+    required: true,
   },
   CreatedAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   expireAt: {
     type: Date,
-    required: true
+    required: true,
   },
 });
 

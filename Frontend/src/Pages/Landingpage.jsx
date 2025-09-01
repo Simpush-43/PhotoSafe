@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 import LockerImage from "../assets/ChatGPT Image Jul 14, 2025, 11_32_11 PM.png";
 import LogoApp from "../assets/ChatGPT Image Jul 16, 2025, 04_04_45 PM.png";
 import Lock from "../assets/lock.gif";
 import LockOpen from "../assets/lock (1).gif";
 import UseAuthStore from "../AuthStore/UseAuthStore";
-import ProfileImage from '../assets/reshot-icon-profile-image-SBDVTH9PEA (1).png'
+import ProfileImage from "../assets/reshot-icon-profile-image-SBDVTH9PEA (1).png";
 const Landingpage = () => {
-const {user,fetchUser} = UseAuthStore();
+  const { user, fetchUser } = UseAuthStore();
   // list animation
   const containerVarients = {
     hidden: {},
@@ -53,22 +53,22 @@ const {user,fetchUser} = UseAuthStore();
     hidden: { opacity: 0, x: -10 },
     show: { opacity: 1, x: 0, transition: { duration: 0.2, ease: "easeOut" } },
   };
-// getting user from authstore
-useEffect(()=>{
-fetchUser();
-},[])
+  // getting user from authstore
+  useEffect(() => {
+    fetchUser();
+  }, []);
   // navigations
   const Navigate = useNavigate();
-  const nvaigateToCreateAccount = ()=>{
-      Navigate('/home/createacoount')
-    }
+  const nvaigateToCreateAccount = () => {
+    Navigate("/home/createacoount");
+  };
 
-   const handleProfileClick = ()=>{
-    Navigate('/home/profile')
-   }
-   const HandleSendClick =()=>{
-Navigate('/home/send')
-   }
+  const handleProfileClick = () => {
+    Navigate("/home/profile");
+  };
+  const HandleSendClick = () => {
+    Navigate("/home/send");
+  };
   return (
     <div className="flex h-screen w-screen bg-gradient-to-t from-sky-500 to-indigo-500 bg-cover items-center flex-col">
       {/* logo and login sign up  */}
@@ -99,37 +99,38 @@ Navigate('/home/send')
           animate="show"
           className="text-white font-bold flex flex-row gap-[12px] justify-end mt-[20px]"
         >
-      <motion.p
-          variants={navbaritemVarients}
-          className="hover:text-amber-500 hover:scale-[1.30] hover:cursor-pointer hover:underline underline-offset-4 decoration-white"
-          onClick={HandleSendClick}
-        >
-          Send
-        </motion.p><motion.p
-          variants={navbaritemVarients}
-          className="hover:text-amber-500 hover:scale-[1.30] hover:cursor-pointer hover:underline underline-offset-4 decoration-white"
-          onClick={nvaigateToCreateAccount}
-        >
-          Receive
-        </motion.p>
+          <motion.p
+            variants={navbaritemVarients}
+            className="hover:text-amber-500 hover:scale-[1.30] hover:cursor-pointer hover:underline underline-offset-4 decoration-white"
+            onClick={HandleSendClick}
+          >
+            Send
+          </motion.p>
+          <motion.p
+            variants={navbaritemVarients}
+            className="hover:text-amber-500 hover:scale-[1.30] hover:cursor-pointer hover:underline underline-offset-4 decoration-white"
+            onClick={nvaigateToCreateAccount}
+          >
+            Receive
+          </motion.p>
 
-      {/* Login / Profile */}
-      {user ? (
-        <img
-          src={user.Profilepic || ProfileImage}
-          alt="Profile"
-          className="w-10 h-10 rounded-full cursor-pointer hover:scale-[1.2] transition-transform"
-          onClick={handleProfileClick}
-        />
-      ) : (
-        <motion.p
-          variants={navbaritemVarients}
-          className="hover:text-amber-500 hover:scale-[1.30] hover:cursor-pointer hover:underline underline-offset-4 decoration-white"
-          onClick={nvaigateToCreateAccount}
-        >
-          Login
-        </motion.p>
-      )}
+          {/* Login / Profile */}
+          {user ? (
+            <img
+              src={user.Profilepic || ProfileImage}
+              alt="Profile"
+              className="w-10 h-10 rounded-full cursor-pointer hover:scale-[1.2] transition-transform"
+              onClick={handleProfileClick}
+            />
+          ) : (
+            <motion.p
+              variants={navbaritemVarients}
+              className="hover:text-amber-500 hover:scale-[1.30] hover:cursor-pointer hover:underline underline-offset-4 decoration-white"
+              onClick={nvaigateToCreateAccount}
+            >
+              Login
+            </motion.p>
+          )}
         </motion.div>
       </div>
       <div className="w-full flex items-start justify-center">
@@ -188,8 +189,7 @@ Navigate('/home/send')
       {/* send and reveice buttons */}
       <div className="flex gap-[50px] mt-[20px]">
         <button className="SendBtn">
-          <div className
-          ="svg-wrapper-1">
+          <div className="svg-wrapper-1">
             <div className="svg-wrapper">
               <img
                 src={Lock}
@@ -198,7 +198,12 @@ Navigate('/home/send')
               />
             </div>
           </div>
-          <button className="font-bold hover:text-green-500" onClick={HandleSendClick}>Send</button>
+          <button
+            className="font-bold hover:text-green-500"
+            onClick={HandleSendClick}
+          >
+            Send
+          </button>
         </button>
         <button className="SendBtn">
           <div className="svg-wrapper-2">

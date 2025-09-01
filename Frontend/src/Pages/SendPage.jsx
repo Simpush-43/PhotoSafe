@@ -6,7 +6,7 @@ import ProfileImage from "../assets/reshot-icon-profile-image-SBDVTH9PEA (1).png
 const SendPage = () => {
   const [selecteduser, setselecteduser] = useState(null);
   const [no_of_images, seno_of_images] = useState(0);
-  const [userImages,setuserImages] = useState([])
+  const [userImages, setuserImages] = useState([]);
   const {
     user,
     fetchUser,
@@ -23,31 +23,32 @@ const SendPage = () => {
   }, []);
   // get all images
   useEffect(() => {
-    if(selecteduser)
-    GetALLImage(selecteduser.id||selecteduser._id);
+    if (selecteduser) GetALLImage(selecteduser.id || selecteduser._id);
   }, [selecteduser]);
-  // useEffect to update 
-  useEffect(()=>{
-if(selecteduser && images){
-  const FilteredImages = images.filter((img)=>img.ReceiverID ===(selecteduser.id|| selecteduser._id))
-  setuserImages(FilteredImages);
-  seno_of_images(FilteredImages.length);
-}
-  },[selecteduser,images])
+  // useEffect to update
+  useEffect(() => {
+    if (selecteduser && images) {
+      const FilteredImages = images.filter(
+        (img) => img.ReceiverID === (selecteduser.id || selecteduser._id)
+      );
+      setuserImages(FilteredImages);
+      seno_of_images(FilteredImages.length);
+    }
+  }, [selecteduser, images]);
   const currentUser = user;
   // function to send images
   const Imagesend = async (e) => {
     const file = e.target.files[0];
-    const ReceiverID = selecteduser._id|| selecteduser.id;
+    const ReceiverID = selecteduser._id || selecteduser.id;
     if (!file) {
       console.error("file is not present");
     }
     try {
-      const res = await UploadImage(file,ReceiverID);
+      const res = await UploadImage(file, ReceiverID);
       if (res?.imageUrl) {
-      const updated = [...userImages, { ReceiverID, imageUrl: res.imageUrl }];
-      setuserImages(updated);
-      seno_of_images(updated.length);
+        const updated = [...userImages, { ReceiverID, imageUrl: res.imageUrl }];
+        setuserImages(updated);
+        seno_of_images(updated.length);
       } else {
         console.error("imageUrl not found in response");
       }

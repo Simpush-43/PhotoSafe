@@ -38,11 +38,16 @@ const ImageUpload = (req, res) => {
 
     try {
       const SenderID = req.user.id || req.user._id;
-      const {ReceiverID} = req.body;
+      const { ReceiverID } = req.body;
       const imageUrl = req.file.path;
       const expireAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min baad
       // save the image
-      const newImage = await Image.create({ SenderID:SenderID, imageUrl, expireAt,ReceiverID:ReceiverID });
+      const newImage = await Image.create({
+        SenderID: SenderID,
+        imageUrl,
+        expireAt,
+        ReceiverID: ReceiverID,
+      });
       res.status(200).json({ success: true, imageUrl: newImage.imageUrl });
     } catch (error) {
       console.error(error.message);
@@ -50,25 +55,31 @@ const ImageUpload = (req, res) => {
     }
   });
 };
-const getAllimages = async(req,res)=>{
- try {
-  const {ReceiverID} = req.query;
-  const images = await Image.find({ReceiverID})
-  res.status(200).json({images})
- } catch (error) {
-  res.status(500).json({ message: "Failed to fetch images", error: error.message });
-  console.log(error.message)
- } 
-}
-// get all images send to user
-const ReceiveImages = async (req,res)=>{
+const getAllimages = async (req, res) => {
   try {
-    const {ReceiverID} = req.params;
-    const images = await Image.find({ReceiverID:ReceiverID}).populate("SenderID","Firstname").sort({createdAt:-1})
-    res.status(200).json({images})
+    const { ReceiverID } = req.query;
+    const images = await Image.find({ ReceiverID });
+    res.status(200).json({ images });
   } catch (error) {
-      res.status(500).json({ message: "Failed to recieve images", error: error.message });
-      console.log(error.message)
+    res
+      .status(500)
+      .json({ message: "Failed to fetch images", error: error.message });
+    console.log(error.message);
   }
-}
-module.exports = {ImageUpload,getAllimages,ReceiveImages};
+};
+// get all images send to user
+const ReceiveImages = async (req, res) => {
+  try {
+    const { ReceiverID } = req.params;
+    const images = await Image.find({ ReceiverID: ReceiverID })
+      .populate("SenderID", "Firstname")
+      .sort({ createdAt: -1 });
+    res.status(200).json({ images });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to recieve images", error: error.message });
+    console.log(error.message);
+  }
+};
+module.exports = { ImageUpload, getAllimages, ReceiveImages };
