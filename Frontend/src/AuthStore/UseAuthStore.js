@@ -123,16 +123,14 @@ const UseAuthStore = create((set) => ({
     }
   },
   // upload image
-  UploadImage: async (file) => {
+  UploadImage: async (file,ReceiverID) => {
     const token = sessionStorage.getItem("accessToken");
     if (!token) {
       console.info("You are not authorized user please login");
     } else {
       const formdata = new FormData();
       formdata.append("image", file);
-      for (let pair of formdata.entries()) {
-        console.log(pair[0] + ": ", pair[1]);
-      }
+      formdata.append("ReceiverID",ReceiverID)
       const res = await axios.post(`${BASE_URL}/upload`, formdata, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -143,7 +141,7 @@ const UseAuthStore = create((set) => ({
     }
   },
   // get all images
-  GetALLImage: async () => {
+  GetALLImage: async (ReceiverID) => {
     set({ loading: true, error: null });
     try {
       const token = sessionStorage.getItem("accessToken");
@@ -152,7 +150,7 @@ const UseAuthStore = create((set) => ({
         res.json({ message: "You are not authorized please login" });
         return;
       } else {
-        const res = await axios.get(`${BASE_URL}/images`, {
+        const res = await axios.get(`${BASE_URL}/images?ReceiverID=${ReceiverID}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         set({ images: res?.data.images, loading: true });
@@ -162,6 +160,10 @@ const UseAuthStore = create((set) => ({
       set({ images: [], error: "Failed to fetch images", loading: false });
     }
   },
+  // Receive ALL images
+  ReceiveALLImage: async()=>{
+
+  }
 }));
 
 export default UseAuthStore;

@@ -37,11 +37,12 @@ const ImageUpload = (req, res) => {
     }
 
     try {
-      const UserId = req.user.id || req.user._id;
+      const SenderID = req.user.id || req.user._id;
+      const {ReceiverID} = req.body;
       const imageUrl = req.file.path;
       const expireAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min baad
       // save the image
-      const newImage = await Image.create({ user: UserId, imageUrl, expireAt });
+      const newImage = await Image.create({ SenderID:SenderID, imageUrl, expireAt,ReceiverID:ReceiverID });
       res.status(200).json({ success: true, imageUrl: newImage.imageUrl });
     } catch (error) {
       console.error(error.message);
@@ -51,11 +52,23 @@ const ImageUpload = (req, res) => {
 };
 const getAllimages = async(req,res)=>{
  try {
-  const images = await Image.find({})
+  const {ReceiverID} = req.query;
+  const images = await Image.find({ReceiverID})
   res.status(200).json({images})
  } catch (error) {
   res.status(500).json({ message: "Failed to fetch images", error: error.message });
   console.log(error.message)
  } 
 }
-module.exports = {ImageUpload,getAllimages};
+// get all images send to user
+const ReceiveImages = async (req,res)=>{
+  try {
+    const {ReceiverID} = req.params;
+    const images = await Image.find({ReceiverID:ReceiverID}).populate("SenderID","Firstname").sort({createdAt:-1})
+    res.status(200).json({images})
+  } catch (error) {
+      res.status(500).json({ message: "Failed to recieve images", error: error.message });
+      console.log(error.message)
+  }
+}
+module.exports = {ImageUpload,getAllimages,ReceiveImages};

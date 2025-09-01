@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const route = express.Router();
 const User = require('../Models/UserDetailSchema');
 const Image = require('../Models/ImageDetailSchema')
-const {ImageUpload,getAllimages} = require('../Contollers/ImageUploadController')
+const {ImageUpload,getAllimages,ReceiveImages} = require('../Contollers/ImageUploadController')
 // verify token 
 const verifyToken = (req,res,next)=>{
 const authHeader = req.headers.authorization;
@@ -23,4 +23,5 @@ if(authHeader){
 }
 route.post('/upload',verifyToken,ImageUpload);
 route.get('/images',verifyToken,getAllimages);
+route.get('/images/receive',verifyToken,ReceiveImages);
 module.exports = route;

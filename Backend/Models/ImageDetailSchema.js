@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
 
 const ImagedetailSchema = new mongoose.Schema({
-  user: {                // 🟢 add this
+  SenderID: {                // 🟢 add this
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  ReceiverID:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'User',
+    required:true
   },
   imageUrl: {
     type: String,
@@ -17,7 +22,7 @@ const ImagedetailSchema = new mongoose.Schema({
   expireAt: {
     type: Date,
     required: true
-  }
+  },
 });
 
 // TTL index
