@@ -70,8 +70,11 @@ const getAllimages = async (req, res) => {
 // get all images send to user
 const ReceiveImages = async (req, res) => {
   try {
-    const { SenderID,ReceiverID } = req.query;
-    const images = await Image.find({ SenderID: SenderID,ReceiverID:ReceiverID })
+    const { SenderID, ReceiverID } = req.query;
+    const images = await Image.find({
+      SenderID: SenderID,
+      ReceiverID: ReceiverID,
+    })
       .populate("SenderID", "Firstname")
       .sort({ CreatedAt: -1 });
     res.status(200).json({ images });

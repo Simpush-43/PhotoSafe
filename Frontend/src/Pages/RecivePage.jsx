@@ -5,15 +5,9 @@ import { AnimatePresence, motion, scale } from "framer-motion";
 import ProfileImage from "../assets/reshot-icon-profile-image-SBDVTH9PEA (1).png";
 const RecivePage = () => {
   const [selecteduser, setselecteduser] = useState(null);
-const [senderImagecount,setsenderImagecount] = useState({})
-  const {
-    user,
-    fetchUser,
-    users,
-    fetchallUsers,
-    images,
-     ReceiveALLImage
-  } = UseAuthStore();
+  const [senderImagecount, setsenderImagecount] = useState({});
+  const { user, fetchUser, users, fetchallUsers, images, ReceiveALLImage } =
+    UseAuthStore();
   // get all users
   useEffect(() => {
     fetchallUsers();
@@ -21,34 +15,35 @@ const [senderImagecount,setsenderImagecount] = useState({})
   }, []);
   // get all images
   useEffect(() => {
-    if(selecteduser){
-      const SenderID = selecteduser.id||selecteduser._id;
-      const ReceiverID = user.id || user._id
-      ReceiveALLImage(SenderID,ReceiverID)
+    if (selecteduser) {
+      const SenderID = selecteduser.id || selecteduser._id;
+      const ReceiverID = user.id || user._id;
+      ReceiveALLImage(SenderID, ReceiverID);
     }
   }, [selecteduser]);
-useEffect(()=>{
-  if(images && images.length>0){
-    const countMap ={};
-    images.forEach((img) => {
-      const senderID = img.SenderID.id||img.SenderID._id;
-      if(countMap[senderID]){
-        countMap[senderID]++;
-      }else{
-        countMap[senderID]=1
-      }
-    });
-    setsenderImagecount(countMap)
-  }
-},[images])
+  useEffect(() => {
+    if (images && images.length > 0) {
+      const countMap = {};
+      images.forEach((img) => {
+        const senderID = img.SenderID.id || img.SenderID._id;
+        if (countMap[senderID]) {
+          countMap[senderID]++;
+        } else {
+          countMap[senderID] = 1;
+        }
+      });
+      setsenderImagecount(countMap);
+    }
+  }, [images]);
   const currentUser = user;
   // function to send images
-const handleuserclick = (u)=>{
-  setselecteduser(u);
-setsenderImagecount((prev)=>({
-  ...prev,[u._id]:null
-}))
-}
+  const handleuserclick = (u) => {
+    setselecteduser(u);
+    setsenderImagecount((prev) => ({
+      ...prev,
+      [u._id]: null,
+    }));
+  };
   return (
     <div className="flex h-screen">
       {/* left siderbar */}
@@ -81,11 +76,11 @@ setsenderImagecount((prev)=>({
                     {u.Firstname}
                   </span>
                   {/* Green circle for image count */}
-        {senderImagecount[u._id] && (
-          <div className="ml-auto bg-green-500 text-white w-6 h-6 flex items-center justify-center rounded-full text-sm">
-            {senderImagecount[u._id]}
-          </div>
-        )}
+                  {senderImagecount[u._id] && (
+                    <div className="ml-auto bg-green-500 text-white w-6 h-6 flex items-center justify-center rounded-full text-sm">
+                      {senderImagecount[u._id]}
+                    </div>
+                  )}
                 </motion.div>
               ))
           ) : (
@@ -149,7 +144,13 @@ setsenderImagecount((prev)=>({
               </div>
               {/* Input */}
               <div className="p-2 border-t flex gap-2 bg-white">
-<input type="text" name="Message" id="" placeholder="send a message" className=" p-2 text-amber-300 rounded-e-sm border-gray-400 bg-gray-600" />
+                <input
+                  type="text"
+                  name="Message"
+                  id=""
+                  placeholder="send a message"
+                  className=" p-2 text-amber-300 rounded-e-sm border-gray-400 bg-gray-600"
+                />
                 <button className="bg-green-500 text-white px-4 py-2 rounded-lg">
                   Send 📩
                 </button>

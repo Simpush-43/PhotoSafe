@@ -117,7 +117,6 @@ const SendPage = () => {
               </div>
               {/* Message area */}
               <div className="flex overflow-y-auto p-4 bg-gray-100">
-
                 <div>
                   <p>Your sent image:</p>
                   {images && images.length > 0 ? (
