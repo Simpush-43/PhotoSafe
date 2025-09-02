@@ -5,7 +5,6 @@ import { AnimatePresence, motion, scale } from "framer-motion";
 import ProfileImage from "../assets/reshot-icon-profile-image-SBDVTH9PEA (1).png";
 const SendPage = () => {
   const [selecteduser, setselecteduser] = useState(null);
-  const [no_of_images, seno_of_images] = useState(0);
   const [userImages, setuserImages] = useState([]);
   const {
     user,
@@ -25,16 +24,7 @@ const SendPage = () => {
   useEffect(() => {
     if (selecteduser) GetALLImage(selecteduser.id || selecteduser._id);
   }, [selecteduser]);
-  // useEffect to update
-  useEffect(() => {
-    if (selecteduser && images) {
-      const FilteredImages = images.filter(
-        (img) => img.ReceiverID === (selecteduser.id || selecteduser._id)
-      );
-      setuserImages(FilteredImages);
-      seno_of_images(FilteredImages.length);
-    }
-  }, [selecteduser, images]);
+
   const currentUser = user;
   // function to send images
   const Imagesend = async (e) => {
@@ -48,7 +38,6 @@ const SendPage = () => {
       if (res?.imageUrl) {
         const updated = [...userImages, { ReceiverID, imageUrl: res.imageUrl }];
         setuserImages(updated);
-        seno_of_images(updated.length);
       } else {
         console.error("imageUrl not found in response");
       }
@@ -128,11 +117,7 @@ const SendPage = () => {
               </div>
               {/* Message area */}
               <div className="flex overflow-y-auto p-4 bg-gray-100">
-                {no_of_images > 0 ? (
-                  <p>No of images sent: {no_of_images}</p>
-                ) : (
-                  <p className="text-gray-500">No messages yet...</p>
-                )}
+
                 <div>
                   <p>Your sent image:</p>
                   {images && images.length > 0 ? (
@@ -161,11 +146,8 @@ const SendPage = () => {
                   htmlFor="imageUpload"
                   className="cursor-pointer bg-blue-500 text-white px-3 py-2 rounded-lg"
                 >
-                  Upload 🗃️
-                </label>
-                <button className="bg-green-500 text-white px-4 py-2 rounded-lg">
                   Send 📩
-                </button>
+                </label>
               </div>
             </motion.div>
           ) : (

@@ -164,7 +164,28 @@ const UseAuthStore = create((set) => ({
     }
   },
   // Receive ALL images
-  ReceiveALLImage: async () => {},
+  ReceiveALLImage: async (SenderID,ReceiverID) => {
+    if(!SenderID){
+      console.info("Sender id is missing")
+    }
+    set({loading:true,error:null})
+    try {
+      const token = sessionStorage.getItem("accessToken")
+      if(!token){
+        set({images:[],loading:false})
+        res.json({ message: "You are not authorized please login" });
+        return;
+      }else{
+        const res = await axios.get(`${BASE_URL}/images/receive?SenderID=${SenderID}&ReceiverID=${ReceiverID}`,{
+          headers:{Authorization:`Bearer ${token}`}
+        })
+        set({images:res?.data.images,loading:true})
+      }
+    } catch (error) {
+      console.error("Fetch all images error:", error);
+      set({ images: [], error: "Failed to fetch images", loading: false });
+    }
+  },
 }));
 
 export default UseAuthStore;

@@ -8,6 +8,7 @@ import Createacoount from './Pages/Createacoount'
 import ErrorBoundary from './ErrorBoundary'
 import ProfilePAge from './Pages/ProfilePAge'
 import SendPage from './Pages/SendPage'
+import RecivePage from './Pages/RecivePage'
 function App() {
 
 
@@ -21,6 +22,7 @@ function App() {
  <Route path='/home/createacoount' element={<Createacoount/>}/>
  <Route path='/home/profile' element={<ProfilePAge/>}/>
  <Route path='/home/send' element={<SendPage/>}/>
+ <Route path='/home/recive' element={<RecivePage/>}/>
     </Routes>
     </ErrorBoundary>
   </Router>

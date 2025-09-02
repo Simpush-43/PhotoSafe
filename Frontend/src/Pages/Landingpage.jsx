@@ -69,6 +69,9 @@ const Landingpage = () => {
   const HandleSendClick = () => {
     Navigate("/home/send");
   };
+  const HandleRecieveClick = ()=>{
+    Navigate('/home/recive')
+  }
   return (
     <div className="flex h-screen w-screen bg-gradient-to-t from-sky-500 to-indigo-500 bg-cover items-center flex-col">
       {/* logo and login sign up  */}
@@ -109,7 +112,7 @@ const Landingpage = () => {
           <motion.p
             variants={navbaritemVarients}
             className="hover:text-amber-500 hover:scale-[1.30] hover:cursor-pointer hover:underline underline-offset-4 decoration-white"
-            onClick={nvaigateToCreateAccount}
+            onClick={HandleRecieveClick}
           >
             Receive
           </motion.p>
@@ -215,7 +218,7 @@ const Landingpage = () => {
               />
             </div>
           </div>
-          <button className="font-bold hover:text-green-500 ">Recieve</button>
+          <button className="font-bold hover:text-green-500 " onClick={HandleRecieveClick}>Recieve</button>
         </button>
       </div>
     </div>
