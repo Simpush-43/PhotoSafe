@@ -28,6 +28,12 @@ const UserdetailSchema = new mongoose.Schema(
     Profilepic: {
       type: String,
     },
+    otp:{
+      type:Number
+    },
+    otpExpiry:{
+      type:Date
+    }
   },
   { timestamps: true }
 );

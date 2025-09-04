@@ -14,11 +14,8 @@ const UseAuthStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       const res = await axios.post(`${BASE_URL}/signup`, userData);
-      const { User, tokens } = res.data;
-      set({ user: User, token: tokens.accessToken, loading: false });
-      sessionStorage.setItem("accessToken", tokens.accessToken);
-      sessionStorage.setItem("refreshToken", tokens.refreshToken);
-      return { success: true };
+      set({ loading: false });
+      return { success: true, message: res.data.message };
     } catch (error) {
       set({
         error: error?.response?.data?.message || "SignUp failed",
@@ -32,16 +29,36 @@ const UseAuthStore = create((set) => ({
     }
   },
 
+  // otp verification
+  VerifySignUpOTP: async (otp) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axios.post(`${BASE_URL}/verify-signup-otp`, { otp });
+      const { user, tokens } = res.data;
+      set({ user: user, token: tokens.accessToken, loading: false });
+      sessionStorage.setItem("accessToken", tokens.accessToken);
+      sessionStorage.setItem("refreshToken", tokens.refreshToken);
+      return { success: true };
+    } catch (error) {
+      set({
+        error: error?.response?.data?.message || "otp verication failed",
+        loading: false,
+      });
+      console.error("otp veriifcation Error:", error);
+      return {
+        success: false,
+        message: error?.response?.data?.message || "otp verication failed",
+      };
+    }
+  },
+
   //signin
   signin: async ({ Email, Password }) => {
     set({ loading: true, error: null });
     try {
       const res = await axios.post(`${BASE_URL}/signin`, { Email, Password });
-      const { User, tokens } = res.data;
-      set({ user: User, token: tokens.accessToken, loading: false });
-      sessionStorage.setItem("accessToken", tokens.accessToken);
-      sessionStorage.setItem("refreshToken", tokens.refreshToken);
-      return { success: true };
+      set({ loading: false });
+      return { success: true, message: res.data.message };
     } catch (error) {
       set({
         error: error?.response?.data?.message || "SignIn failed",
@@ -54,7 +71,29 @@ const UseAuthStore = create((set) => ({
       };
     }
   },
-
+  // signin otp 
+  VerifyOtpLogin: async(otp)=>{
+    set({loading:true,error:null})
+    try {
+      console.log("otp is:",otp)
+      const res = await axios.post(`${BASE_URL}/verify-login-otp`, { otp });
+      const { user, tokens } = res.data;
+      set({ user: user, token: tokens.accessToken, loading: false });
+      sessionStorage.setItem("accessToken", tokens.accessToken);
+      sessionStorage.setItem("refreshToken", tokens.refreshToken);
+      return { success: true };
+    } catch (error) {
+      set({
+        error: error?.response?.data?.message || "otp verication failed",
+        loading: false,
+      });
+      console.error("otp veriifcation Error:", error);
+      return {
+        success: false,
+        message: error?.response?.data?.message || "otp verication failed",
+      };
+    }
+  },
   //signout
   signout: () => {
     set({ user: null, token: null });

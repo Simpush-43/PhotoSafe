@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const path = require("path");
 const axios = require("axios");
-
+const sendMail = require('../Utilits/SendMail')
 const envPath = path.resolve(__dirname, "../.env");
 dotenv.config({ path: envPath });
 
@@ -44,13 +44,15 @@ exports.Signup = async (req, res) => {
       Password,
       Age: Number(Age),
     });
+    // generate otp
+    const otp = Math.floor(1000+Math.random()*9000);
+    Newuser.otp = otp; // saving the otp in db
+    Newuser.otpExpiry = Date.now() + 5 *60*1000 // 5 minutes
     await Newuser.save();
-    // using the generatetoken function
-    const { accessToken, refreshToken } = generateToken(Newuser);
+    await sendMail(Email,otp);
     res.status(201).json({
       message: "User signed up succefully",
       User: { id: Newuser._id, Firstname, Lastname, Email, Age },
-      tokens: { accessToken, refreshToken },
     });
   } catch (error) {
     console.error("Signup controller error:", error);
@@ -77,13 +79,15 @@ exports.Signin = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials!" });
     }
-
-    const { accessToken, refreshToken } = generateToken(user);
+    // generate otp
+    const otp = Math.floor(1000+Math.random()*9000);
+    Newuser.otp = otp; // saving the otp in db
+    Newuser.otpExpiry = Date.now() + 5 *60*1000 // 5 minutes
+    await sendMail(Email,otp)
     // passing the user
     res.status(200).json({
       message: "user logged in succesfully",
       user: { id: user._id, Email: user.Email },
-      tokens: { accessToken, refreshToken },
     });
   } catch (error) {
     res
@@ -91,6 +95,33 @@ exports.Signin = async (req, res) => {
       .json({ message: "Error in logging in", error: error.message });
   }
 };
+// verify otp 
+exports.VerifyOtp = async(req,res)=>{
+  try {
+    console.log('welcome to here ')
+    const {id,otp} = req.body;
+    console.log("id is:",id);
+    console.log("otp is:",otp)
+    const user = await User.findById(id);
+    console.log("user is:",user)
+    if(!user) return res.status(500).json({message:"user doesnt exists"});
+    if(user.otp !== Number(otp)) return res.status(400).json({message:"invalid otp"});
+    if(user.otpExpiry < Date.now()) return res.status(404).json({message:"otp has expired"})
+      const {accessToken,refreshToken} = generateToken(user);
+    // clear the otp now
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+        res.status(200).json({
+        message: "Login successful",
+        tokens: { accessToken, refreshToken },
+        user: { id: user._id, Email: user.Email },
+      });
+  } catch (error) {
+    console.log("error in otp verification",error.message);
+    res.status(500).json({ message: "OTP verification failed", error: error.message });
+  }
+}
 exports.fetchAlluser = async (req, res) => {
   try {
     const users = await User.find({}, "-Password");

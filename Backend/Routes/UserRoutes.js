@@ -7,6 +7,7 @@ const {
   Signup,
   handleGoogleCallback,
   fetchAlluser,
+  VerifyOtp
 } = require("../Contollers/UserSignUpContoller");
 const passport = require("passport");
 const User = require("../Models/UserDetailSchema");
@@ -47,5 +48,7 @@ route.get("/me", verifyToken, async (req, res) => {
 route.get("/users", verifyToken, fetchAlluser);
 // differnt routes
 route.post("/signin", Signin);
+route.post('/verify-login-otp',VerifyOtp);
 route.post("/signup", Signup);
+route.post("/verify-signup-otp",VerifyOtp)
 module.exports = route;

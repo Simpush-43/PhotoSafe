@@ -44,7 +44,7 @@ const Createacoount = () => {
     e.preventDefault();
     const result = await signin(loginFormData);
     if (result?.success) {
-      Navigate("/home");
+      Navigate("/VerifyOTP",{state:{type:"signin"}});
     } else {
       console.error("Login failed:", result?.message);
       alert(result?.message || "Login Failed");
@@ -56,7 +56,7 @@ const Createacoount = () => {
     try {
       const result = await signup(FormData);
       if (result?.success) {
-        Navigate("/home");
+        Navigate("/VerifyOTP",{state:{type:"signup"}});
       } else {
         console.error("Signup failed:", result?.message);
         // Display an error message to the user
