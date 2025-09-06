@@ -1,8 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const route = express.Router();
-const User = require("../Models/UserDetailSchema");
-const Image = require("../Models/ImageDetailSchema");
 const {
   ImageUpload,
   getAllimages,

@@ -1,11 +1,21 @@
 import React, { useEffect } from "react";
 import UseAuthStore from "../AuthStore/UseAuthStore";
+import { useNavigate } from "react-router-dom";
 const ProfilePAge = () => {
-  const { user, fetchUser } = UseAuthStore();
+  const { user, fetchUser, signout } = UseAuthStore();
+  const navigate = useNavigate();
   useEffect(() => {
     fetchUser();
   }, []);
-  console.log("user is:", user);
+  const handlelogout = async () => {
+    const result = await signout();
+    if (result?.success) {
+      navigate("/home");
+    }
+  };
+  const handleGoBack = ()=>{
+    navigate('/home')
+  }
   return (
     <div className="Profile_page">
       {user ? (
@@ -20,7 +30,14 @@ const ProfilePAge = () => {
               {user.Firstname} {user.Lastname} <br />
               <span>Fullstack dev &amp; UX UI</span>
             </div>
-            <div class="card-socials"></div>
+            <div class="card-socials">
+              <button
+                className="bg-red-500 p-[4px] rounded-sm text-amber-50 "
+                onClick={handlelogout}
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </>
       ) : (
@@ -34,6 +51,7 @@ const ProfilePAge = () => {
           </div>
         </div>
       )}
+      <div className="GoBackBtn absolute bottom-[0px]" onClick={handleGoBack}>Go Back !</div>
     </div>
   );
 };

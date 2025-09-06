@@ -14,8 +14,8 @@ const UseAuthStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       const res = await axios.post(`${BASE_URL}/signup`, userData);
-      set({ loading: false });
-      return { success: true, message: res.data.message };
+      set({ loading: false ,user:res.data.User});
+      return { success: true, message: res.data.message,id:res.data.User.id };
     } catch (error) {
       set({
         error: error?.response?.data?.message || "SignUp failed",
@@ -30,10 +30,10 @@ const UseAuthStore = create((set) => ({
   },
 
   // otp verification
-  VerifySignUpOTP: async (otp) => {
+  VerifySignUpOTP: async (otp,id) => {
     set({ loading: true, error: null });
     try {
-      const res = await axios.post(`${BASE_URL}/verify-signup-otp`, { otp });
+      const res = await axios.post(`${BASE_URL}/verify-signup-otp`, { otp,id });
       const { user, tokens } = res.data;
       set({ user: user, token: tokens.accessToken, loading: false });
       sessionStorage.setItem("accessToken", tokens.accessToken);
@@ -57,8 +57,8 @@ const UseAuthStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       const res = await axios.post(`${BASE_URL}/signin`, { Email, Password });
-      set({ loading: false });
-      return { success: true, message: res.data.message };
+      set({ loading: false ,user:res.data.user});
+      return { success: true, message: res.data.message,id:res.data.user.id};
     } catch (error) {
       set({
         error: error?.response?.data?.message || "SignIn failed",
@@ -72,11 +72,10 @@ const UseAuthStore = create((set) => ({
     }
   },
   // signin otp 
-  VerifyOtpLogin: async(otp)=>{
+  VerifyOtpLogin: async(otp,id)=>{
     set({loading:true,error:null})
     try {
-      console.log("otp is:",otp)
-      const res = await axios.post(`${BASE_URL}/verify-login-otp`, { otp });
+      const res = await axios.post(`${BASE_URL}/verify-login-otp`, { otp,id});
       const { user, tokens } = res.data;
       set({ user: user, token: tokens.accessToken, loading: false });
       sessionStorage.setItem("accessToken", tokens.accessToken);
@@ -96,9 +95,23 @@ const UseAuthStore = create((set) => ({
   },
   //signout
   signout: () => {
-    set({ user: null, token: null });
-    sessionStorage.removeItem("accessToken");
-    sessionStorage.removeItem("refreshToken");
+    set({ loading: true, error: null });
+    try {
+      set({ user: null, token: null });
+      sessionStorage.removeItem("accessToken");
+      sessionStorage.removeItem("refreshToken");
+      return { success: true };
+    } catch (error) {
+      set({
+        error: error?.response?.data?.message || "logout failed",
+        loading: false,
+      });
+      console.error("logout Error:", error?.response?.data?.message);
+      return {
+        success: false,
+        message: error?.response?.data?.message || "logout failed",
+      };
+    }
   },
   // handle googlecallback
   handleGoogleCallback: async (serverResponse) => {

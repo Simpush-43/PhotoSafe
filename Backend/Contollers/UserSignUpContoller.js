@@ -27,7 +27,6 @@ function generateToken(user) {
 exports.Signup = async (req, res) => {
   try {
     const { Firstname, Lastname, Email, Password, Age } = req.body;
-    console.log("Request body:", req.body);
     // check if user exists
     const Existinguser = await User.findOne({ Email });
     if (Existinguser) {
@@ -77,12 +76,16 @@ exports.Signin = async (req, res) => {
     // check password
     const isMatch = await bcrypt.compare(Password, user.Password);
     if (!isMatch) {
+      console.log("password is not match")
       return res.status(400).json({ message: "Invalid credentials!" });
+    }else{
+      console.log("password is mathched")
     }
     // generate otp
     const otp = Math.floor(1000+Math.random()*9000);
-    Newuser.otp = otp; // saving the otp in db
-    Newuser.otpExpiry = Date.now() + 5 *60*1000 // 5 minutes
+    user.otp = otp; // saving the otp in db
+    user.otpExpiry = Date.now() + 5 *60*1000 // 5 minutes
+    await user.save();
     await sendMail(Email,otp)
     // passing the user
     res.status(200).json({
@@ -100,17 +103,11 @@ exports.VerifyOtp = async(req,res)=>{
   try {
     console.log('welcome to here ')
     const {id,otp} = req.body;
-    console.log("id is:",id);
-    console.log("otp is:",otp)
     const user = await User.findById(id);
-    console.log("user is:",user)
     if(!user) return res.status(500).json({message:"user doesnt exists"});
     if(user.otp !== Number(otp)) return res.status(400).json({message:"invalid otp"});
     if(user.otpExpiry < Date.now()) return res.status(404).json({message:"otp has expired"})
       const {accessToken,refreshToken} = generateToken(user);
-    // clear the otp now
-    user.otp = null;
-    user.otpExpiry = null;
     await user.save();
         res.status(200).json({
         message: "Login successful",

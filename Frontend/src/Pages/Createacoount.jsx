@@ -43,6 +43,7 @@ const Createacoount = () => {
   const handlelogin = async (e) => {
     e.preventDefault();
     const result = await signin(loginFormData);
+    console.log("result is:",result);
     if (result?.success) {
       Navigate("/VerifyOTP",{state:{type:"signin"}});
     } else {

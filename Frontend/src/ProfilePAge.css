@@ -4,6 +4,7 @@
   align-items: center;
   height: 100vh;
   justify-content: center;
+   background: linear-gradient(to top, #0ea5e9 0%, #6366f1 100%);
 }
 .loader {
   position: relative;
@@ -101,7 +102,7 @@
   --main-color: #323232;
   width: 200px;
   height: 254px;
-  background: var(--bg-color);
+   background: linear-gradient(to bottom, #4dc7d9 0%,#66a6ff 100%);
   border: 2px solid var(--main-color);
   box-shadow: 4px 4px var(--main-color);
   border-radius: 5px;
